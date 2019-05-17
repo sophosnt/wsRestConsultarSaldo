@@ -1,0 +1,176 @@
+swagger: "2.0"
+info:
+  title: "Consulta de Saldo"
+  version: "1.0.0"
+  contact:
+    name: Sophos Solutions
+    url: 'https://www.sophossolutions.com/'
+    email: digitals@sophossolutions.com
+  license:
+    name: Apache License Version 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0'
+schemes:
+- "http"
+host: "$(test.host)"
+basePath: "/accounts"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+securityDefinitions: {}
+paths:
+  /balance:
+    get:
+      responses:
+        200:
+          description: "200 OK"
+          schema:
+            $ref: "#/definitions/ConsultaSaldoRes"
+        403:
+          description: "Cliente no autorizado"
+          schema:
+            $ref: "#/definitions/ErrorCode"
+        500:
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/ErrorCode"
+        600:
+          description: "Error en los parámetros"
+          schema:
+            $ref: "#/definitions/ErrorCode"
+        700:
+          description: "Error de conectividad"
+          schema:
+            $ref: "#/definitions/ErrorCode"
+      parameters:
+      - name: X-RqUID
+        in: header
+        description: 'Identificador Único con formato de 32 dígitos hexadecimales divididos en guiones: 550e8400-e29b-41d4-a716-446655440000'
+        required: false
+        type: string
+      - name: X-Channel
+        in: header
+        description: Nemonico de Canal Origen de la Transaccion
+        required: false
+        type: string
+      - name: X-IPAddr
+        in: header
+        description: IP de origen donde se realiza la invocación de servicio o api
+        required: false
+        type: string
+      - name: X-Session
+        in: header
+        description: Sesion o token de autenticación del uso del api
+        required: false
+        type: string
+      - name: X-haveToken
+        in: header
+        description: Bandera para validacion de seguridad
+        required: false
+        type: string
+      - name: "getBalanceAccount"
+        required: false
+        in: "body"
+        schema:
+          $ref: "#/definitions/ConsultaSaldoReq"
+        description: "Req"
+definitions:
+  ErrorCode:
+    properties:
+      httpCode:
+        description: Código de respuesta HTTP
+        maxLength: 5
+        type: string
+      httpMessage:
+        description: Mensaje asociado a HttpCode
+        maxLength: 500
+        type: string
+      moreInformation:
+        description: Información adicional para HttpCode
+        maxLength: 1000
+        type: string
+    description: Objeto que contiene los campos a retornar en un mensaje de error
+  ConsultaSaldoReq:
+    properties:
+      id_trn:
+        description: "Identificador tipo transaccion"
+        type: string
+      account_id:
+        description: "Numero de la cuenta origen de la transaccion"
+        type: integer
+      account_type:
+        description: "Tipo de la cuenta origen de la transaccion"
+        type: string
+      card_id:
+        description: "Numero de tarjeta asociado"
+        type: integer
+      pin:
+        description: "PIN tarjeta"
+        type: string
+      date:
+        description: "fecha"
+        type: string 
+        format: date-time 
+    additionalProperties: false
+    description: "Objeto que contiene los elementos del request"
+
+  ConsultaSaldoRes:
+    properties:
+      id_trn: 
+        description: "Identificador tipo transaccion"
+        type: string
+      auth_code: 
+        description: "Numero de Autorizacion"
+        type: string
+      date: 
+        description: "Fecha y hora"
+        type: string
+        format: date-time 
+      server_date: 
+        description: "Fecha y hora del servidor"
+        type: string
+        format: date-time 
+      status:
+        $ref: "#/definitions/StatusType"
+      account:
+        $ref: "#/definitions/AccountType"
+    additionalProperties: false
+    description: "Objeto que contiene los elementos del response"
+  StatusType:
+    properties:
+      status_code:
+        description: "Codigo estado respuesta"
+        type: string
+      status_desc:
+        description: "Descripcion estado de respuesta"
+        type: string 
+      status_info:
+        description: "Informacion tipo de respuesta"
+        type: string  
+      additional_status_code:
+        description: "Codigo estado respuesta adicional "
+        type: string
+      additional_status_desc:
+        description: "Descripcion estado respuesta adicional"
+        type: string
+  AccountType:
+    properties:
+      account_id: 
+        description: "Numero cuenta Origen"
+        type: integer
+      account_type: 
+        description: "Tipo cuenta Origen"
+        type: string
+      card_id: 
+        description: "Numero de la tarjeta"
+        type: integer
+      pin: 
+        description: "Pin de la tarjeta"
+        type: string
+      account_bal: 
+        description: "Tipo cuenta Origen"
+        type: integer
+      currency: 
+        description: "Moneda de la cuenta"
+        type: string
+tags: []
